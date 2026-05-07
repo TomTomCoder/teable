@@ -42,6 +42,155 @@
     </picture>
   </h1>
 
+---
+
+## 🚀 Self-Hosted Edition — Unlimited EE Features
+
+> This fork unlocks all Enterprise Edition features for self-hosters at no cost. No license key, no subscription, no usage caps.
+
+### What's unlocked
+
+| Feature | Status |
+|---|---|
+| Unlimited rows per base | ✅ |
+| AI field & chat integration | ✅ |
+| Automations (unlimited runs) | ✅ |
+| Advanced permissions & role matrix | ✅ |
+| Audit log | ✅ |
+| Row coloring | ✅ |
+| Password-restricted shares | ✅ |
+| Custom authentication providers | ✅ |
+| Domain verification | ✅ |
+| Organization management | ✅ |
+| Admin panel | ✅ |
+| Unlimited revision history | ✅ |
+| Unlimited database connections | ✅ |
+| Custom domain | ✅ |
+
+### AI model configuration
+
+Connect any LLM provider directly from the admin panel at `/admin/ai-setting`:
+
+- OpenAI (GPT-4o, GPT-4 Turbo…)
+- Anthropic (Claude 3.5, Claude 4…)
+- Google Gemini
+- Ollama (local models)
+- Azure OpenAI
+- DeepSeek, Mistral, Groq, Cohere, and 10+ more
+
+No environment variable juggling — configure providers through the UI.
+
+---
+
+## Self-Hosted Installation
+
+### Requirements
+
+- Node.js 18+
+- pnpm 9+
+- PostgreSQL 14+
+
+### Option 1 — Docker (recommended)
+
+```sh
+# Clone this fork
+git clone https://github.com/TomTomCoder/teable.git
+cd teable
+
+# Start all services (PostgreSQL + backend + frontend)
+cd dockers/examples/standalone/
+docker-compose up -d
+```
+
+The app will be available at `http://localhost:3000`.
+
+### Option 2 — Build from source
+
+#### 1. Clone & install dependencies
+
+```sh
+git clone https://github.com/TomTomCoder/teable.git
+cd teable
+
+# Enable the correct package manager
+corepack enable
+
+# Install all dependencies
+pnpm install --no-frozen-lockfile --ignore-scripts
+
+# Rebuild native modules (bcrypt, sqlite3)
+npm rebuild
+
+# Generate Prisma client
+cd packages/db-main-prisma && pnpm prisma-generate-ci && cd ../.. 
+```
+
+#### 2. Configure the database
+
+```sh
+# Start PostgreSQL (or use an existing instance)
+# Then set connection string in apps/nextjs-app/.env:
+PRISMA_DATABASE_URL=postgresql://user:password@localhost:5432/teable?schema=public
+```
+
+#### 3. Environment variables
+
+The EE edition and unlimited features are pre-configured in `apps/nextjs-app/.env`:
+
+```env
+# Build mode — enables all EE features
+NEXT_BUILD_ENV_EDITION=ee
+
+# Removes the free-tier row cap (0 = unlimited)
+MAX_FREE_ROW_LIMIT=0
+
+# Database
+PRISMA_DATABASE_URL=postgresql://teable:teable@127.0.0.1:5432/teable?schema=public
+
+PORT=3000
+SOCKET_PORT=3000
+```
+
+#### 4. Run database migrations
+
+```sh
+cd packages/db-main-prisma
+pnpm prisma migrate deploy
+cd ../..
+```
+
+#### 5. Start the development server
+
+```sh
+cd apps/nestjs-backend
+pnpm dev
+```
+
+The backend starts the Next.js frontend automatically. Open `http://localhost:3000`.
+
+#### 6. Configure AI (optional)
+
+1. Sign in as an admin
+2. Go to **Admin Panel → AI Settings** (`/admin/ai-setting`)
+3. Select your provider and enter your API key
+4. Save — AI features are immediately available to all users
+
+### Running tests
+
+```sh
+# Backend unit tests
+cd apps/nestjs-backend && pnpm test-unit
+
+# Frontend unit tests
+cd apps/nextjs-app && pnpm test-unit
+
+# v2 repository tests (uses in-memory PGLite, no Docker needed)
+cd packages/v2/adapter-table-repository-postgres
+TEABLE_V2_TEST_DATABASE_URL=memory:// pnpm test-unit
+```
+
+---
+
 ## Quick Guide
 
 1. Looking for a quick experience? Select a scenario from the [template center](https://app.teable.ai/public/template) and click "Use this template".
@@ -76,7 +225,7 @@ Everything you need, right out of the box:
 - [x] Undo/Redo
 - [x] Validation
 
-### 🏞️ Multiple Views
+### 🏕️ Multiple Views
 
 Visualize and interact with data in various ways best suited for their specific tasks.
 
