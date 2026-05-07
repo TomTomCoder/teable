@@ -3,7 +3,7 @@ import { BillingProductLevel } from '@teable/openapi';
 import type { IUsageVo } from '@teable/openapi';
 import { Permissions } from '../auth/decorators/permissions.decorator';
 
-const ENTERPRISE_USAGE: IUsageVo = {
+export const ENTERPRISE_USAGE: IUsageVo = {
   level: BillingProductLevel.Enterprise,
   limit: {
     maxRows: 9_999_999_999,
@@ -35,8 +35,9 @@ const ENTERPRISE_USAGE: IUsageVo = {
 
 @Controller('api')
 export class UsageController {
+  // No @Permissions here: any authenticated user can read instance usage.
+  // instance|read would restrict to admins only, but all EE users need this.
   @Get('instance/usage')
-  @Permissions('instance|read')
   getInstanceUsage(): IUsageVo {
     return ENTERPRISE_USAGE;
   }
